@@ -162,13 +162,9 @@
             .letter-preview {
                 display: block !important; /* Ensure the preview div is visible */
                 border: none !important; /* Remove border for print */
-                padding: 0 !important; /* Remove padding for print */
+                padding: 0 !important; /* Remove padding from the preview container itself */
                 background-color: #ffffff !important;
-
-                /* Add print-specific padding to leave space for letterhead */
-                padding-top: 3cm !important;    /* Adjust this value based on your letterhead's header height */
-                padding-bottom: 2cm !important; /* Adjust this value based on your letterhead's footer height */
-                margin: 0 !important; /* Remove any margin */
+                margin: 0 !important; /* Remove any margin from the preview container */
             }
 
             .letter-preview h2 { /* Hide the "Generated Offer Letter Preview" heading */
@@ -180,7 +176,11 @@
                 font-size: 12pt !important; /* Adjust font size for print */
                 line-height: 1.5 !important;
                 color: #000000 !important; /* Ensure black text for printing */
-                padding: 0 1cm !important; /* Add some side padding for the letter content */
+                /* Apply the desired print margins directly to the letter content */
+                padding-top: 3cm !important;    /* Adjust this value based on your letterhead's header height */
+                padding-bottom: 2cm !important; /* Adjust this value based on your letterhead's footer height */
+                padding-left: 1cm !important;   /* Standard left margin for the letter text */
+                padding-right: 1cm !important;  /* Standard right margin for the letter text */
             }
         }
     </style>
