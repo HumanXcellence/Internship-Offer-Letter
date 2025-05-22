@@ -148,8 +148,8 @@
                 width: auto;
                 margin: 0;
             }
-            .form-section, .buttons {
-                display: none; /* Hide form and buttons when printing */
+            .form-section, .buttons, .user-info, .storage-controls {
+                display: none; /* Hide form, buttons, user info, and storage controls when printing */
             }
             .letter-preview {
                 border: none;
@@ -170,103 +170,161 @@
     <div class="container">
         <h1 class="text-3xl font-bold text-center text-gray-800 mb-6">Internship Offer Letter Generator</h1>
 
-        <div class="form-section">
-            <h2 class="text-xl font-semibold text-gray-700 col-span-full mb-4">Intern Details</h2>
-            <div class="form-group">
-                <label for="candidateInitials">Candidate Initials (e.g., AB)</label>
-                <input type="text" id="candidateInitials" class="rounded-md" value="AB">
-            </div>
-            <div class="form-group">
-                <label for="sequentialNumber">Sequential Number (e.g., 001)</label>
-                <input type="number" id="sequentialNumber" class="rounded-md" value="001" min="1">
-            </div>
-            <div class="form-group col-span-full">
-                <label for="internFullName">Intern's Full Name</label>
-                <input type="text" id="internFullName" class="rounded-md" value="John Doe">
-            </div>
-            <div class="form-group col-span-full">
-                <label for="internAddress">Intern's Full Address</label>
-                <textarea id="internAddress" class="rounded-md">123 Main Street, Anytown, State, 12345</textarea>
-            </div>
-            <div class="form-group">
-                <label for="internEmail">Intern's Email Address</label>
-                <input type="email" id="internEmail" class="rounded-md" value="john.doe@example.com">
-            </div>
-            <div class="form-group">
-                <label for="internPhone">Intern's Phone Number</label>
-                <input type="tel" id="internPhone" class="rounded-md" value="+91 98765 43210">
-            </div>
-            <div class="form-group">
-                <label for="internFirstName">Intern's First Name (for salutation)</label>
-                <input type="text" id="internFirstName" class="rounded-md" value="John">
-            </div>
-
-            <h2 class="text-xl font-semibold text-gray-700 col-span-full mt-6 mb-4">Internship Details</h2>
-            <div class="form-group">
-                <label for="startDate">Start Date</label>
-                <input type="date" id="startDate" class="rounded-md" value="2025-06-01">
-            </div>
-            <div class="form-group">
-                <label for="endDateOption">Duration Type</label>
-                <div class="radio-group">
-                    <input type="radio" id="byEndDate" name="durationType" value="endDate" checked>
-                    <label for="byEndDate">End Date</label>
-                    <input type="radio" id="byDuration" name="durationType" value="duration">
-                    <label for="byDuration">Months Duration</label>
-                </div>
-            </div>
-            <div class="form-group" id="endDateGroup">
-                <label for="endDate">End Date</label>
-                <input type="date" id="endDate" class="rounded-md" value="2025-08-31">
-            </div>
-            <div class="form-group hidden" id="durationGroup">
-                <label for="durationMonths">Duration (Months)</label>
-                <input type="number" id="durationMonths" class="rounded-md" value="3" min="1">
-            </div>
-            <div class="form-group">
-                <label for="workingHours">Working Hours (e.g., 9:30 AM to 6:00 PM)</label>
-                <input type="text" id="workingHours" class="rounded-md" value="9:30 AM to 6:00 PM">
-            </div>
-            <div class="form-group col-span-full">
-                <label for="supervisor">Reporting To (Name/Title)</label>
-                <input type="text" id="supervisor" class="rounded-md" value="Jane Smith, HR Manager">
-            </div>
-            <div class="form-group">
-                <label for="stipendAmount">Monthly Stipend (INR)</label>
-                <input type="number" id="stipendAmount" class="rounded-md" value="5000" min="0">
-            </div>
-            <div class="form-group">
-                <label for="acceptanceDate">Acceptance Date (e.g., 3 business days from offer date)</label>
-                <input type="date" id="acceptanceDate" class="rounded-md" value="2025-05-25">
-            </div>
-
-            <h2 class="text-xl font-semibold text-gray-700 col-span-full mt-6 mb-4">Sender Details</h2>
-            <div class="form-group">
-                <label for="senderName">Your Name (Sender)</label>
-                <input type="text" id="senderName" class="rounded-md" value="Your Name">
-            </div>
-            <div class="form-group">
-                <label for="senderTitle">Your Title (Sender)</label>
-                <input type="text" id="senderTitle" class="rounded-md" value="Founder/CEO/HR Head">
-            </div>
+        <div id="loadingIndicator" class="mt-4 text-center text-sm font-medium text-blue-500">
+            <div class="animate-spin rounded-full h-5 w-5 border-b-2 border-blue-500 inline-block align-middle mr-2"></div>
+            Initializing Firebase...
         </div>
 
-        <div class="buttons flex justify-center gap-4 mt-6">
-            <button id="generateLetter" class="btn-primary">Generate Letter</button>
-            <button id="printLetter" class="btn-secondary">Print Letter</button>
-        </div>
+        <div id="appContent" class="hidden">
+            <div class="user-info text-center text-gray-600 mb-4">
+                Your User ID: <span id="displayUserId" class="font-mono text-sm bg-gray-200 px-2 py-1 rounded">Loading...</span>
+            </div>
 
-        <div class="letter-preview mt-8 hidden">
-            <h2 class="text-xl font-semibold text-gray-700 mb-4">Generated Offer Letter Preview</h2>
-            <div id="letterContent" class="letter-content">
+            <div class="storage-controls mb-6 p-4 border border-blue-200 bg-blue-50 rounded-lg flex flex-col md:flex-row items-center justify-between gap-4">
+                <div class="flex items-center gap-2 w-full md:w-auto">
+                    <label for="savedOffers" class="font-semibold text-blue-800 whitespace-nowrap">Load Saved Offer:</label>
+                    <select id="savedOffers" class="rounded-md flex-grow md:flex-grow-0">
+                        <option value="">No offers saved</option>
+                    </select>
+                    <button id="loadSelectedOffer" class="btn-primary px-4 py-2 text-sm">Load</button>
                 </div>
+                <div class="flex gap-2 w-full md:w-auto justify-end">
+                    <button id="newOffer" class="btn-secondary px-4 py-2 text-sm">New Offer</button>
+                    <button id="saveOffer" class="btn-primary px-4 py-2 text-sm">Save Offer</button>
+                </div>
+            </div>
+
+            <div id="statusMessage" class="mt-4 text-center text-sm font-medium text-gray-700"></div>
+
+            <div class="form-section">
+                <h2 class="text-xl font-semibold text-gray-700 col-span-full mb-4">Intern Details</h2>
+                <div class="form-group">
+                    <label for="candidateInitials">Candidate Initials (e.g., AB)</label>
+                    <input type="text" id="candidateInitials" class="rounded-md" value="AB">
+                </div>
+                <div class="form-group">
+                    <label for="sequentialNumber">Sequential Number (Auto-generated)</label>
+                    <input type="text" id="sequentialNumber" class="rounded-md bg-gray-200" readonly value="001">
+                </div>
+                <div class="form-group col-span-full">
+                    <label for="internFullName">Intern's Full Name</label>
+                    <input type="text" id="internFullName" class="rounded-md" value="John Doe">
+                </div>
+                <div class="form-group col-span-full">
+                    <label for="internAddress">Intern's Full Address</label>
+                    <textarea id="internAddress" class="rounded-md">123 Main Street, Anytown, State, 12345</textarea>
+                </div>
+                <div class="form-group">
+                    <label for="internEmail">Intern's Email Address</label>
+                    <input type="email" id="internEmail" class="rounded-md" value="john.doe@example.com">
+                </div>
+                <div class="form-group">
+                    <label for="internPhone">Intern's Phone Number</label>
+                    <input type="tel" id="internPhone" class="rounded-md" value="+91 98765 43210">
+                </div>
+                <div class="form-group">
+                    <label for="internFirstName">Intern's First Name (for salutation)</label>
+                    <input type="text" id="internFirstName" class="rounded-md" value="John">
+                </div>
+
+                <h2 class="text-xl font-semibold text-gray-700 col-span-full mt-6 mb-4">Internship Details</h2>
+                <div class="form-group">
+                    <label for="startDate">Start Date</label>
+                    <input type="date" id="startDate" class="rounded-md" value="2025-06-01">
+                </div>
+                <div class="form-group">
+                    <label for="endDateOption">Duration Type</label>
+                    <div class="radio-group">
+                        <input type="radio" id="byEndDate" name="durationType" value="endDate" checked>
+                        <label for="byEndDate">End Date</label>
+                        <input type="radio" id="byDuration" name="durationType" value="duration">
+                        <label for="byDuration">Months Duration</label>
+                    </div>
+                </div>
+                <div class="form-group" id="endDateGroup">
+                    <label for="endDate">End Date</label>
+                    <input type="date" id="endDate" class="rounded-md" value="2025-08-31">
+                </div>
+                <div class="form-group hidden" id="durationGroup">
+                    <label for="durationMonths">Duration (Months)</label>
+                    <input type="number" id="durationMonths" class="rounded-md" value="3" min="1">
+                </div>
+                <div class="form-group">
+                    <label for="workingHours">Working Hours (e.g., 9:30 AM to 6:00 PM)</label>
+                    <input type="text" id="workingHours" class="rounded-md" value="9:30 AM to 6:00 PM">
+                </div>
+                <div class="form-group col-span-full">
+                    <label for="supervisor">Reporting To (Name/Title)</label>
+                    <input type="text" id="supervisor" class="rounded-md" value="Jane Smith, HR Manager">
+                </div>
+                <div class="form-group">
+                    <label for="stipendAmount">Monthly Stipend (INR)</label>
+                    <input type="number" id="stipendAmount" class="rounded-md" value="5000" min="0">
+                </div>
+                <div class="form-group">
+                    <label for="acceptanceDate">Acceptance Date (e.g., 3 business days from offer date)</label>
+                    <input type="date" id="acceptanceDate" class="rounded-md" value="2025-05-25">
+                </div>
+
+                <h2 class="text-xl font-semibold text-gray-700 col-span-full mt-6 mb-4">Sender Details</h2>
+                <div class="form-group">
+                    <label for="senderName">Your Name (Sender)</label>
+                    <input type="text" id="senderName" class="rounded-md" value="Your Name">
+                </div>
+                <div class="form-group">
+                    <label for="senderTitle">Your Title (Sender)</label>
+                    <input type="text" id="senderTitle" class="rounded-md" value="Founder/CEO/HR Head">
+                </div>
+            </div>
+
+            <div class="buttons flex justify-center gap-4 mt-6">
+                <button id="generateLetter" class="btn-primary">Generate Letter</button>
+                <button id="printLetter" class="btn-secondary">Print Letter</button>
+            </div>
+
+            <div class="letter-preview mt-8 hidden">
+                <h2 class="text-xl font-semibold text-gray-700 mb-4">Generated Offer Letter Preview</h2>
+                <div id="letterContent" class="letter-content">
+                </div>
+            </div>
         </div>
     </div>
 
-    <script>
+    <script type="module">
+        // Firebase SDK imports
+        import { initializeApp } from "https://www.gstatic.com/firebasejs/11.6.1/firebase-app.js";
+        import { getAuth, signInAnonymously, onAuthStateChanged } from "https://www.gstatic.com/firebasejs/11.6.1/firebase-auth.js";
+        import { getFirestore, doc, getDoc, setDoc, onSnapshot, collection, query, serverTimestamp } from "https://www.gstatic.com/firebasejs/11.6.1/firebase-firestore.js";
+        import { getAnalytics } from "https://www.gstatic.com/firebasejs/11.6.1/firebase-analytics.js";
+
+        // --- IMPORTANT: YOUR ACTUAL FIREBASE CONFIG ---
+        // This is the configuration you provided.
+        const firebaseConfig = {
+          apiKey: "AIzaSyDzmu8tXeDCFdI3_wjspYD8iA1mvtuXPk0",
+          authDomain: "humanxcellence2025.firebaseapp.com",
+          projectId: "humanxcellence2025",
+          storageBucket: "humanxcellence2025.firebasestorage.app",
+          messagingSenderId: "1049353263549",
+          appId: "1:1049353263549:web:c2ce1275b46e29f6385ad4",
+          measurementId: "G-4YNR9BNDGR"
+        };
+        // --- END OF IMPORTANT REPLACEMENT SECTION ---
+
+        // Use the projectId from your firebaseConfig as the appId for Firestore paths.
+        const appId = firebaseConfig.projectId; 
+        // The initialAuthToken is not used when running outside Canvas, so it's not declared here.
+
+        // Global Firebase variables (will be initialized after auth)
+        let app;
+        let db;
+        let auth;
+        let userId;
+        let authReady = false; // Flag to indicate if authentication is complete
+        let analytics; // Declare analytics variable
+
         // Get references to all input fields and elements
         const candidateInitialsInput = document.getElementById('candidateInitials');
-        const sequentialNumberInput = document.getElementById('sequentialNumber');
+        const sequentialNumberInput = document.getElementById('sequentialNumber'); // This will be auto-generated/loaded
         const internFullNameInput = document.getElementById('internFullName');
         const internAddressInput = document.getElementById('internAddress');
         const internEmailInput = document.getElementById('internEmail');
@@ -290,6 +348,64 @@
         const letterPreviewDiv = document.querySelector('.letter-preview');
         const letterContentDiv = document.getElementById('letterContent');
 
+        const newOfferBtn = document.getElementById('newOffer');
+        const saveOfferBtn = document.getElementById('saveOffer');
+        const savedOffersSelect = document.getElementById('savedOffers');
+        const loadSelectedOfferBtn = document.getElementById('loadSelectedOffer');
+
+        const statusMessageDiv = document.getElementById('statusMessage');
+        const loadingIndicatorDiv = document.getElementById('loadingIndicator');
+        const appContentDiv = document.getElementById('appContent');
+        const displayUserIdSpan = document.getElementById('displayUserId');
+
+        let currentOfferRefNo = ''; // Stores the refNo of the currently loaded/new offer
+
+        // --- Firebase Initialization and Authentication ---
+        async function initializeFirebase() {
+            try {
+                loadingIndicatorDiv.classList.remove('hidden');
+                statusMessageDiv.textContent = 'Initializing Firebase...';
+
+                // Ensure firebaseConfig is not empty
+                if (!firebaseConfig.apiKey || !firebaseConfig.projectId) {
+                    throw new Error("Firebase configuration is missing or incomplete. Please update the 'firebaseConfig' object in the HTML script.");
+                }
+
+                app = initializeApp(firebaseConfig);
+                db = getFirestore(app);
+                auth = getAuth(app);
+                // Initialize analytics only if measurementId is present
+                if (firebaseConfig.measurementId) {
+                    analytics = getAnalytics(app); 
+                }
+
+                onAuthStateChanged(auth, async (user) => {
+                    if (user) {
+                        userId = user.uid;
+                        displayUserIdSpan.textContent = userId;
+                        authReady = true;
+                        statusMessageDiv.textContent = 'Firebase initialized. User authenticated.';
+                        loadingIndicatorDiv.classList.add('hidden');
+                        appContentDiv.classList.remove('hidden');
+                        await loadAllOffersForUser(); // Load offers once authenticated
+                        if (!currentOfferRefNo) { // If no offer loaded initially (e.g., first time user)
+                            generateNewRefNo(); // Generate a new one
+                            generateLetter(); // Generate letter with new ref no
+                        }
+                    } else {
+                        // Sign in anonymously if no custom token, or if user signs out
+                        await signInAnonymously(auth);
+                    }
+                });
+            } catch (error) {
+                console.error("Error initializing Firebase or authenticating:", error);
+                statusMessageDiv.textContent = `Error: ${error.message}. Please ensure your Firebase config is correct and security rules are set.`;
+                loadingIndicatorDiv.classList.add('hidden');
+            }
+        }
+
+        // --- UI Helper Functions ---
+
         // Function to update visibility of end date/duration fields
         function updateDurationFields() {
             if (document.getElementById('byEndDate').checked) {
@@ -301,24 +417,219 @@
             }
         }
 
-        // Add event listeners for duration type radio buttons
-        endDateOptionRadios.forEach(radio => {
-            radio.addEventListener('change', updateDurationFields);
-        });
-
-        // Initial call to set correct field visibility on load
-        updateDurationFields();
-
         // Function to format date to "Month Day, Year"
         function formatDate(dateString) {
-            const options = { year: 'numeric', month: 'long', day: 'numeric' };
-            return new Date(dateString).toLocaleDateString('en-US', options);
+            if (!dateString) return '';
+            try {
+                const options = { year: 'numeric', month: 'long', day: 'numeric' };
+                return new Date(dateString).toLocaleDateString('en-US', options);
+            } catch (e) {
+                console.error("Error formatting date:", dateString, e);
+                return dateString; // Return original if invalid
+            }
         }
 
-        // Function to generate the letter content
+        // Function to generate a simple unique ID for sequentialNumber
+        function generateUniqueSequentialNumber() {
+            return Date.now().toString().slice(-6) + Math.floor(Math.random() * 1000).toString().padStart(3, '0');
+        }
+
+        // Function to clear form and generate a new refNo
+        function generateNewRefNo() {
+            currentOfferRefNo = generateUniqueSequentialNumber();
+            sequentialNumberInput.value = currentOfferRefNo;
+            candidateInitialsInput.value = 'AB';
+            internFullNameInput.value = 'John Doe';
+            internAddressInput.value = '123 Main Street, Anytown, State, 12345';
+            internEmailInput.value = 'john.doe@example.com';
+            internPhoneInput.value = '+91 98765 43210';
+            internFirstNameInput.value = 'John';
+            startDateInput.value = '2025-06-01';
+            document.getElementById('byEndDate').checked = true;
+            updateDurationFields();
+            endDateInput.value = '2025-08-31';
+            durationMonthsInput.value = 3;
+            workingHoursInput.value = '9:30 AM to 6:00 PM';
+            supervisorInput.value = 'Jane Smith, HR Manager';
+            stipendAmountInput.value = 5000;
+            acceptanceDateInput.value = '2025-05-25';
+            senderNameInput.value = 'Your Name';
+            senderTitleInput.value = 'Founder/CEO/HR Head';
+            statusMessageDiv.textContent = 'New offer form ready.';
+            generateLetter(); // Regenerate letter with new blank form
+            savedOffersSelect.value = ''; // Deselect any loaded offer
+        }
+
+        // Function to populate form fields from a data object
+        function populateForm(data) {
+            currentOfferRefNo = data.sequentialNumber || generateUniqueSequentialNumber();
+            sequentialNumberInput.value = currentOfferRefNo;
+            candidateInitialsInput.value = data.candidateInitials || '';
+            internFullNameInput.value = data.internFullName || '';
+            internAddressInput.value = data.internAddress || '';
+            internEmailInput.value = data.internEmail || '';
+            internPhoneInput.value = data.internPhone || '';
+            internFirstNameInput.value = data.internFirstName || '';
+            startDateInput.value = data.startDate || '';
+
+            if (data.endDateOption === 'duration') {
+                document.getElementById('byDuration').checked = true;
+                durationMonthsInput.value = data.durationMonths || '';
+            } else {
+                document.getElementById('byEndDate').checked = true;
+                endDateInput.value = data.endDate || '';
+            }
+            updateDurationFields();
+
+            workingHoursInput.value = data.workingHours || '';
+            supervisorInput.value = data.supervisor || '';
+            stipendAmountInput.value = data.stipendAmount || 0;
+            acceptanceDateInput.value = data.acceptanceDate || '';
+            senderNameInput.value = data.senderName || '';
+            senderTitleInput.value = data.senderTitle || '';
+
+            generateLetter(); // Update the letter preview
+        }
+
+        // Function to get all form data as an object
+        function getFormData() {
+            return {
+                candidateInitials: candidateInitialsInput.value.toUpperCase(),
+                sequentialNumber: sequentialNumberInput.value, // Use the current refNo
+                internFullName: internFullNameInput.value,
+                internAddress: internAddressInput.value,
+                internEmail: internEmailInput.value,
+                internPhone: internPhoneInput.value,
+                internFirstName: internFirstNameInput.value,
+                startDate: startDateInput.value,
+                endDateOption: document.querySelector('input[name="durationType"]:checked').value,
+                endDate: endDateInput.value,
+                durationMonths: parseInt(durationMonthsInput.value) || 0,
+                workingHours: workingHoursInput.value,
+                supervisor: supervisorInput.value,
+                stipendAmount: parseInt(stipendAmountInput.value) || 0,
+                acceptanceDate: acceptanceDateInput.value,
+                senderName: senderNameInput.value,
+                senderTitle: senderTitleInput.value,
+                createdAt: serverTimestamp() // Add a timestamp for sorting
+            };
+        }
+
+        // --- Firestore Operations ---
+
+        async function saveOffer() {
+            if (!authReady) {
+                statusMessageDiv.textContent = 'Please wait for Firebase to initialize.';
+                return;
+            }
+            statusMessageDiv.textContent = 'Saving offer...';
+            const offerData = getFormData();
+            const offerRefNo = offerData.sequentialNumber; // Use the generated sequential number as document ID
+
+            if (!offerRefNo) {
+                statusMessageDiv.textContent = 'Error: Offer Reference Number is missing. Please generate a new offer.';
+                return;
+            }
+
+            try {
+                const docRef = doc(db, `artifacts/${appId}/users/${userId}/internship_offers`, offerRefNo);
+                await setDoc(docRef, offerData);
+                statusMessageDiv.textContent = 'Offer saved successfully!';
+                // Refresh the dropdown after saving
+                await loadAllOffersForUser();
+                savedOffersSelect.value = offerRefNo; // Select the newly saved offer
+            } catch (e) {
+                console.error("Error saving document: ", e);
+                statusMessageDiv.textContent = `Error saving offer: ${e.message}`;
+            }
+        }
+
+        async function loadAllOffersForUser() {
+            if (!authReady) {
+                statusMessageDiv.textContent = 'Please wait for Firebase to initialize to load offers.';
+                return;
+            }
+            statusMessageDiv.textContent = 'Loading saved offers...';
+            try {
+                const offersColRef = collection(db, `artifacts/${appId}/users/${userId}/internship_offers`);
+                // Use onSnapshot to get real-time updates and initially load
+                onSnapshot(offersColRef, (snapshot) => {
+                    savedOffersSelect.innerHTML = '<option value="">Select an offer</option>'; // Clear existing options
+                    let offers = [];
+                    snapshot.forEach(doc => {
+                        offers.push({ id: doc.id, ...doc.data() });
+                    });
+
+                    // Sort offers by createdAt timestamp in descending order
+                    offers.sort((a, b) => (b.createdAt?.toDate() || 0) - (a.createdAt?.toDate() || 0));
+
+                    if (offers.length === 0) {
+                        savedOffersSelect.innerHTML = '<option value="">No offers saved</option>';
+                        statusMessageDiv.textContent = 'No offers found for this user.';
+                        generateNewRefNo(); // Start with a new blank form if no offers
+                    } else {
+                        offers.forEach(offer => {
+                            const option = document.createElement('option');
+                            option.value = offer.id;
+                            option.textContent = `Ref: ${offer.candidateInitials}/.../${offer.id} - ${offer.internFullName}`;
+                            savedOffersSelect.appendChild(option);
+                        });
+
+                        // Automatically load the most recent offer if nothing is selected
+                        if (!savedOffersSelect.value && offers.length > 0) {
+                            savedOffersSelect.value = offers[0].id;
+                            populateForm(offers[0]);
+                            statusMessageDiv.textContent = `Loaded most recent offer: ${offers[0].id}`;
+                        } else if (savedOffersSelect.value) {
+                            // If an offer was already selected (e.g., after save), re-populate it
+                            const selectedOffer = offers.find(o => o.id === savedOffersSelect.value);
+                            if (selectedOffer) {
+                                populateForm(selectedOffer);
+                                statusMessageDiv.textContent = `Loaded offer: ${selectedOffer.id}`;
+                            }
+                        }
+                    }
+                }, (error) => {
+                    console.error("Error listening to offers:", error);
+                    statusMessageDiv.textContent = `Error loading offers: ${error.message}`;
+                });
+            } catch (e) {
+                console.error("Error setting up onSnapshot for offers:", e);
+                statusMessageDiv.textContent = `Error loading offers: ${e.message}`;
+            }
+        }
+
+        async function loadSelectedOffer() {
+            if (!authReady) {
+                statusMessageDiv.textContent = 'Please wait for Firebase to initialize.';
+                return;
+            }
+            const selectedRefNo = savedOffersSelect.value;
+            if (!selectedRefNo) {
+                statusMessageDiv.textContent = 'Please select an offer to load.';
+                return;
+            }
+            statusMessageDiv.textContent = `Loading offer ${selectedRefNo}...`;
+            try {
+                const docRef = doc(db, `artifacts/${appId}/users/${userId}/internship_offers`, selectedRefNo);
+                const docSnap = await getDoc(docRef);
+
+                if (docSnap.exists()) {
+                    populateForm(docSnap.data());
+                    statusMessageDiv.textContent = `Offer ${selectedRefNo} loaded successfully!`;
+                } else {
+                    statusMessageDiv.textContent = `No offer found with ID: ${selectedRefNo}`;
+                }
+            } catch (e) {
+                console.error("Error loading document: ", e);
+                statusMessageDiv.textContent = `Error loading offer: ${e.message}`;
+            }
+        }
+
+        // --- Letter Generation Function ---
         function generateLetter() {
             const candidateInitials = candidateInitialsInput.value.toUpperCase();
-            const sequentialNumber = String(parseInt(sequentialNumberInput.value)).padStart(3, '0'); // Ensure 3 digits
+            const sequentialNumber = sequentialNumberInput.value; // Use the current refNo
             const internFullName = internFullNameInput.value;
             const internAddress = internAddressInput.value;
             const internEmail = internEmailInput.value;
@@ -332,7 +643,6 @@
             const senderName = senderNameInput.value;
             const senderTitle = senderTitleInput.value;
 
-            // Determine end date or duration text
             let endDateText = '';
             if (document.getElementById('byEndDate').checked) {
                 const endDate = formatDate(endDateInput.value);
@@ -342,7 +652,6 @@
                 endDateText = `For a period of ${durationMonths} months from the start date`;
             }
 
-            // Determine stipend text
             let stipendParagraph = '';
             if (stipendAmount > 0) {
                 stipendParagraph = `You will be provided with a monthly stipend of INR ${stipendAmount} for the duration of your internship. Please note that this stipend is inclusive of all allowances and is subject to review based on your performance and company policy.`;
@@ -418,16 +727,26 @@ Date: _________________________`;
             letterPreviewDiv.classList.remove('hidden'); // Show the preview section
         }
 
-        // Add event listener for the generate button
-        generateLetterBtn.addEventListener('click', generateLetter);
+        // --- Event Listeners ---
+        endDateOptionRadios.forEach(radio => {
+            radio.addEventListener('change', updateDurationFields);
+        });
 
-        // Add event listener for the print button
+        generateLetterBtn.addEventListener('click', generateLetter);
         printLetterBtn.addEventListener('click', () => {
             window.print();
         });
 
-        // Initial generation on load with default values
-        generateLetter();
+        newOfferBtn.addEventListener('click', generateNewRefNo);
+        saveOfferBtn.addEventListener('click', saveOffer);
+        loadSelectedOfferBtn.addEventListener('click', loadSelectedOffer);
+
+        // Initial setup on window load
+        window.onload = function () {
+            initializeFirebase();
+            updateDurationFields(); // Set correct field visibility
+            generateLetter(); // Generate initial letter preview
+        };
     </script>
 </body>
 </html>
