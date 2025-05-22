@@ -148,20 +148,39 @@
                 width: auto;
                 margin: 0;
             }
-            .form-section, .buttons, .user-info, .storage-controls {
-                display: none; /* Hide form, buttons, user info, and storage controls when printing */
+            /* Hide all UI elements not part of the letter content */
+            h1, /* Main title */
+            #loadingIndicator,
+            .user-info,
+            .storage-controls,
+            #statusMessage,
+            .form-section,
+            .buttons {
+                display: none !important; /* Use !important to ensure override */
             }
+
             .letter-preview {
-                border: none;
-                padding: 20px; /* Default padding for screen view */
-                background-color: #ffffff;
+                display: block !important; /* Ensure the preview div is visible */
+                border: none !important; /* Remove border for print */
+                padding: 0 !important; /* Remove padding for print */
+                background-color: #ffffff !important;
+
                 /* Add print-specific padding to leave space for letterhead */
-                padding-top: 3cm;    /* Adjust this value based on your letterhead's header height */
-                padding-bottom: 2cm; /* Adjust this value based on your letterhead's footer height */
+                padding-top: 3cm !important;    /* Adjust this value based on your letterhead's header height */
+                padding-bottom: 2cm !important; /* Adjust this value based on your letterhead's footer height */
+                margin: 0 !important; /* Remove any margin */
             }
+
+            .letter-preview h2 { /* Hide the "Generated Offer Letter Preview" heading */
+                display: none !important;
+            }
+
             .letter-content {
-                font-size: 12pt; /* Adjust font size for print */
-                line-height: 1.5;
+                display: block !important; /* Ensure content is visible */
+                font-size: 12pt !important; /* Adjust font size for print */
+                line-height: 1.5 !important;
+                color: #000000 !important; /* Ensure black text for printing */
+                padding: 0 1cm !important; /* Add some side padding for the letter content */
             }
         }
     </style>
