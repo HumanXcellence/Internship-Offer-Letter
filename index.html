@@ -138,7 +138,7 @@
             /* Define page margins for all pages */
             @page {
                 margin-top: 6cm;    /* Consistent top margin for header on all pages */
-                margin-bottom: 3.5cm; /* Consistent bottom margin for footer on all pages (increased) */
+                margin-bottom: 3.5cm; /* Consistent bottom margin for footer on all pages */
                 margin-left: 1cm;   /* Consistent left margin */
                 margin-right: 1cm;  /* Consistent right margin */
             }
@@ -223,10 +223,6 @@
             <div class="form-section">
                 <h2 class="text-xl font-semibold text-gray-700 col-span-full mb-4">Intern Details</h2>
                 <div class="form-group">
-                    <label for="candidateInitials">Candidate Initials (e.g., AB)</label>
-                    <input type="text" id="candidateInitials" class="rounded-md" value="AB">
-                </div>
-                <div class="form-group">
                     <label for="sequentialNumber">Sequential Number (Auto-generated)</label>
                     <input type="text" id="sequentialNumber" class="rounded-md bg-gray-200" readonly value="001">
                 </div>
@@ -246,11 +242,6 @@
                     <label for="internPhone">Intern's Phone Number</label>
                     <input type="tel" id="internPhone" class="rounded-md" value="+91 98765 43210">
                 </div>
-                <div class="form-group">
-                    <label for="internFirstName">Intern's First Name (for salutation)</label>
-                    <input type="text" id="internFirstName" class="rounded-md" value="John">
-                </div>
-
                 <h2 class="text-xl font-semibold text-gray-700 col-span-full mt-6 mb-4">Internship Details</h2>
                 <div class="form-group">
                     <label for="startDate">Start Date</label>
@@ -347,13 +338,11 @@
         let analytics; // Declare analytics variable
 
         // Get references to all input fields and elements
-        const candidateInitialsInput = document.getElementById('candidateInitials');
         const sequentialNumberInput = document.getElementById('sequentialNumber'); // This will be auto-generated/loaded
         const internFullNameInput = document.getElementById('internFullName');
         const internAddressInput = document.getElementById('internAddress');
         const internEmailInput = document.getElementById('internEmail');
         const internPhoneInput = document.getElementById('internPhone');
-        const internFirstNameInput = document.getElementById('internFirstName');
         const startDateInput = document.getElementById('startDate');
         const endDateOptionRadios = document.querySelectorAll('input[name="durationType"]');
         const endDateGroup = document.getElementById('endDateGroup');
@@ -462,12 +451,10 @@
         function generateNewRefNo() {
             currentOfferRefNo = generateUniqueSequentialNumber();
             sequentialNumberInput.value = currentOfferRefNo;
-            candidateInitialsInput.value = 'AB';
             internFullNameInput.value = 'John Doe';
             internAddressInput.value = '123 Main Street, Anytown, State, 12345';
             internEmailInput.value = 'john.doe@example.com';
             internPhoneInput.value = '+91 98765 43210';
-            internFirstNameInput.value = 'John';
             startDateInput.value = '2025-06-01';
             document.getElementById('byEndDate').checked = true;
             updateDurationFields();
@@ -488,12 +475,10 @@
         function populateForm(data) {
             currentOfferRefNo = data.sequentialNumber || generateUniqueSequentialNumber();
             sequentialNumberInput.value = currentOfferRefNo;
-            candidateInitialsInput.value = data.candidateInitials || '';
             internFullNameInput.value = data.internFullName || '';
             internAddressInput.value = data.internAddress || '';
             internEmailInput.value = data.internEmail || '';
             internPhoneInput.value = data.internPhone || '';
-            internFirstNameInput.value = data.internFirstName || '';
             startDateInput.value = data.startDate || '';
 
             if (data.endDateOption === 'duration') {
@@ -518,13 +503,11 @@
         // Function to get all form data as an object
         function getFormData() {
             return {
-                candidateInitials: candidateInitialsInput.value.toUpperCase(),
                 sequentialNumber: sequentialNumberInput.value, // Use the current refNo
                 internFullName: internFullNameInput.value,
                 internAddress: internAddressInput.value,
                 internEmail: internEmailInput.value,
                 internPhone: internPhoneInput.value,
-                internFirstName: internFirstNameInput.value,
                 startDate: startDateInput.value,
                 endDateOption: document.querySelector('input[name="durationType"]:checked').value,
                 endDate: endDateInput.value,
@@ -595,7 +578,7 @@
                         offers.forEach(offer => {
                             const option = document.createElement('option');
                             option.value = offer.id;
-                            option.textContent = `Ref: ${offer.candidateInitials}/.../${offer.id} - ${offer.internFullName}`;
+                            option.textContent = `Ref: HXC/INT/2025/${offer.id} - ${offer.internFullName}`;
                             savedOffersSelect.appendChild(option);
                         });
 
@@ -652,13 +635,11 @@
 
         // --- Letter Generation Function ---
         function generateLetter() {
-            const candidateInitials = candidateInitialsInput.value.toUpperCase();
             const sequentialNumber = sequentialNumberInput.value; // Use the current refNo
             const internFullName = internFullNameInput.value;
             const internAddress = internAddressInput.value;
             const internEmail = internEmailInput.value;
             const internPhone = internPhoneInput.value;
-            const internFirstName = internFirstNameInput.value;
             const startDate = formatDate(startDateInput.value);
             const workingHours = workingHoursInput.value;
             const supervisor = supervisorInput.value;
@@ -684,7 +665,7 @@
             }
 
             const letter = `Date: ${formatDate(new Date().toISOString().split('T')[0])}
-Ref No.: HXC/INT/2025/${candidateInitials}/${sequentialNumber}
+Ref No.: HXC/INT/2025/${sequentialNumber}
 Name: ${internFullName}
 Address: ${internAddress}
 Email: ${internEmail}
@@ -692,7 +673,7 @@ Phone: ${internPhone}
 
 Subject: Offer of Remote Internship at HumanXcellence Consultants
 
-Dear ${internFirstName},
+Dear ${internFullName.split(' ')[0]},
 
 We are pleased to offer you a remote internship opportunity with HumanXcellence Consultants, a leading recruitment firm specializing in Pharma, IT, and ITES services across India. We believe your skills and enthusiasm will be a valuable addition to our team, and this internship will provide you with practical, hands-on exposure to the dynamic world of recruitment from the comfort of your home.
 
