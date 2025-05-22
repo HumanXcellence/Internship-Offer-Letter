@@ -1,0 +1,433 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Internship Offer Letter Generator</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <style>
+        /* Custom styles for better readability and print */
+        body {
+            font-family: 'Inter', sans-serif;
+            background-color: #f0f2f5;
+            display: flex;
+            justify-content: center;
+            align-items: flex-start;
+            min-height: 100vh;
+            padding: 20px;
+        }
+        .container {
+            background-color: #ffffff;
+            border-radius: 12px;
+            box-shadow: 0 4px 20px rgba(0, 0, 0, 0.05);
+            padding: 32px;
+            max-width: 1000px; /* Increased max-width for better layout */
+            width: 100%;
+            display: flex;
+            flex-direction: column;
+            gap: 24px;
+        }
+        .form-section, .letter-preview {
+            padding: 24px;
+            border: 1px solid #e2e8f0;
+            border-radius: 8px;
+            background-color: #f8fafc;
+        }
+        .form-section {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(280px, 1fr)); /* Responsive grid for inputs */
+            gap: 16px;
+        }
+        .form-group {
+            display: flex;
+            flex-direction: column;
+        }
+        label {
+            font-weight: 600;
+            margin-bottom: 6px;
+            color: #334155;
+        }
+        input[type="text"],
+        input[type="email"],
+        input[type="tel"],
+        input[type="date"],
+        input[type="number"],
+        textarea,
+        select {
+            padding: 10px 14px;
+            border: 1px solid #cbd5e1;
+            border-radius: 6px;
+            font-size: 1rem;
+            color: #475569;
+            transition: border-color 0.2s ease-in-out, box-shadow 0.2s ease-in-out;
+        }
+        input[type="text"]:focus,
+        input[type="email"]:focus,
+        input[type="tel"]:focus,
+        input[type="date"]:focus,
+        input[type="number"]:focus,
+        textarea:focus,
+        select:focus {
+            outline: none;
+            border-color: #3b82f6;
+            box-shadow: 0 0 0 3px rgba(59, 130, 246, 0.25);
+        }
+        textarea {
+            min-height: 80px;
+            resize: vertical;
+        }
+        .radio-group {
+            display: flex;
+            gap: 16px;
+            align-items: center;
+            margin-top: 8px;
+        }
+        .radio-group input[type="radio"] {
+            margin-right: 4px;
+        }
+        button {
+            padding: 12px 24px;
+            border-radius: 8px;
+            font-weight: 700;
+            cursor: pointer;
+            transition: background-color 0.2s ease-in-out, transform 0.1s ease-in-out;
+            box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+        }
+        button:hover {
+            transform: translateY(-1px);
+        }
+        .btn-primary {
+            background-color: #3b82f6;
+            color: #ffffff;
+        }
+        .btn-primary:hover {
+            background-color: #2563eb;
+        }
+        .btn-secondary {
+            background-color: #64748b;
+            color: #ffffff;
+        }
+        .btn-secondary:hover {
+            background-color: #475569;
+        }
+        .letter-content {
+            white-space: pre-wrap; /* Preserves whitespace and line breaks */
+            font-size: 1rem;
+            line-height: 1.6;
+            color: #334155;
+        }
+        .letter-content p {
+            margin-bottom: 1em;
+        }
+        .letter-content strong {
+            font-weight: 700;
+        }
+        .letter-content .signature-line {
+            margin-top: 40px;
+            border-top: 1px dashed #94a3b8;
+            padding-top: 8px;
+        }
+        .letter-content .acceptance-section {
+            margin-top: 40px;
+            border-top: 1px solid #e2e8f0;
+            padding-top: 20px;
+        }
+
+        /* Print specific styles */
+        @media print {
+            body {
+                background-color: #ffffff;
+                padding: 0;
+                margin: 0;
+            }
+            .container {
+                box-shadow: none;
+                border-radius: 0;
+                padding: 0;
+                max-width: 100%;
+                width: auto;
+                margin: 0;
+            }
+            .form-section, .buttons {
+                display: none; /* Hide form and buttons when printing */
+            }
+            .letter-preview {
+                border: none;
+                padding: 20px; /* Default padding for screen view */
+                background-color: #ffffff;
+                /* Add print-specific padding to leave space for letterhead */
+                padding-top: 3cm;    /* Adjust this value based on your letterhead's header height */
+                padding-bottom: 2cm; /* Adjust this value based on your letterhead's footer height */
+            }
+            .letter-content {
+                font-size: 12pt; /* Adjust font size for print */
+                line-height: 1.5;
+            }
+        }
+    </style>
+</head>
+<body class="bg-gray-100 flex justify-center items-start min-h-screen p-5">
+    <div class="container">
+        <h1 class="text-3xl font-bold text-center text-gray-800 mb-6">Internship Offer Letter Generator</h1>
+
+        <div class="form-section">
+            <h2 class="text-xl font-semibold text-gray-700 col-span-full mb-4">Intern Details</h2>
+            <div class="form-group">
+                <label for="candidateInitials">Candidate Initials (e.g., AB)</label>
+                <input type="text" id="candidateInitials" class="rounded-md" value="AB">
+            </div>
+            <div class="form-group">
+                <label for="sequentialNumber">Sequential Number (e.g., 001)</label>
+                <input type="number" id="sequentialNumber" class="rounded-md" value="001" min="1">
+            </div>
+            <div class="form-group col-span-full">
+                <label for="internFullName">Intern's Full Name</label>
+                <input type="text" id="internFullName" class="rounded-md" value="John Doe">
+            </div>
+            <div class="form-group col-span-full">
+                <label for="internAddress">Intern's Full Address</label>
+                <textarea id="internAddress" class="rounded-md">123 Main Street, Anytown, State, 12345</textarea>
+            </div>
+            <div class="form-group">
+                <label for="internEmail">Intern's Email Address</label>
+                <input type="email" id="internEmail" class="rounded-md" value="john.doe@example.com">
+            </div>
+            <div class="form-group">
+                <label for="internPhone">Intern's Phone Number</label>
+                <input type="tel" id="internPhone" class="rounded-md" value="+91 98765 43210">
+            </div>
+            <div class="form-group">
+                <label for="internFirstName">Intern's First Name (for salutation)</label>
+                <input type="text" id="internFirstName" class="rounded-md" value="John">
+            </div>
+
+            <h2 class="text-xl font-semibold text-gray-700 col-span-full mt-6 mb-4">Internship Details</h2>
+            <div class="form-group">
+                <label for="startDate">Start Date</label>
+                <input type="date" id="startDate" class="rounded-md" value="2025-06-01">
+            </div>
+            <div class="form-group">
+                <label for="endDateOption">Duration Type</label>
+                <div class="radio-group">
+                    <input type="radio" id="byEndDate" name="durationType" value="endDate" checked>
+                    <label for="byEndDate">End Date</label>
+                    <input type="radio" id="byDuration" name="durationType" value="duration">
+                    <label for="byDuration">Months Duration</label>
+                </div>
+            </div>
+            <div class="form-group" id="endDateGroup">
+                <label for="endDate">End Date</label>
+                <input type="date" id="endDate" class="rounded-md" value="2025-08-31">
+            </div>
+            <div class="form-group hidden" id="durationGroup">
+                <label for="durationMonths">Duration (Months)</label>
+                <input type="number" id="durationMonths" class="rounded-md" value="3" min="1">
+            </div>
+            <div class="form-group">
+                <label for="workingHours">Working Hours (e.g., 9:30 AM to 6:00 PM)</label>
+                <input type="text" id="workingHours" class="rounded-md" value="9:30 AM to 6:00 PM">
+            </div>
+            <div class="form-group col-span-full">
+                <label for="supervisor">Reporting To (Name/Title)</label>
+                <input type="text" id="supervisor" class="rounded-md" value="Jane Smith, HR Manager">
+            </div>
+            <div class="form-group">
+                <label for="stipendAmount">Monthly Stipend (INR)</label>
+                <input type="number" id="stipendAmount" class="rounded-md" value="5000" min="0">
+            </div>
+            <div class="form-group">
+                <label for="acceptanceDate">Acceptance Date (e.g., 3 business days from offer date)</label>
+                <input type="date" id="acceptanceDate" class="rounded-md" value="2025-05-25">
+            </div>
+
+            <h2 class="text-xl font-semibold text-gray-700 col-span-full mt-6 mb-4">Sender Details</h2>
+            <div class="form-group">
+                <label for="senderName">Your Name (Sender)</label>
+                <input type="text" id="senderName" class="rounded-md" value="Your Name">
+            </div>
+            <div class="form-group">
+                <label for="senderTitle">Your Title (Sender)</label>
+                <input type="text" id="senderTitle" class="rounded-md" value="Founder/CEO/HR Head">
+            </div>
+        </div>
+
+        <div class="buttons flex justify-center gap-4 mt-6">
+            <button id="generateLetter" class="btn-primary">Generate Letter</button>
+            <button id="printLetter" class="btn-secondary">Print Letter</button>
+        </div>
+
+        <div class="letter-preview mt-8 hidden">
+            <h2 class="text-xl font-semibold text-gray-700 mb-4">Generated Offer Letter Preview</h2>
+            <div id="letterContent" class="letter-content">
+                </div>
+        </div>
+    </div>
+
+    <script>
+        // Get references to all input fields and elements
+        const candidateInitialsInput = document.getElementById('candidateInitials');
+        const sequentialNumberInput = document.getElementById('sequentialNumber');
+        const internFullNameInput = document.getElementById('internFullName');
+        const internAddressInput = document.getElementById('internAddress');
+        const internEmailInput = document.getElementById('internEmail');
+        const internPhoneInput = document.getElementById('internPhone');
+        const internFirstNameInput = document.getElementById('internFirstName');
+        const startDateInput = document.getElementById('startDate');
+        const endDateOptionRadios = document.querySelectorAll('input[name="durationType"]');
+        const endDateGroup = document.getElementById('endDateGroup');
+        const durationGroup = document.getElementById('durationGroup');
+        const endDateInput = document.getElementById('endDate');
+        const durationMonthsInput = document.getElementById('durationMonths');
+        const workingHoursInput = document.getElementById('workingHours');
+        const supervisorInput = document.getElementById('supervisor');
+        const stipendAmountInput = document.getElementById('stipendAmount');
+        const acceptanceDateInput = document.getElementById('acceptanceDate');
+        const senderNameInput = document.getElementById('senderName');
+        const senderTitleInput = document.getElementById('senderTitle');
+
+        const generateLetterBtn = document.getElementById('generateLetter');
+        const printLetterBtn = document.getElementById('printLetter');
+        const letterPreviewDiv = document.querySelector('.letter-preview');
+        const letterContentDiv = document.getElementById('letterContent');
+
+        // Function to update visibility of end date/duration fields
+        function updateDurationFields() {
+            if (document.getElementById('byEndDate').checked) {
+                endDateGroup.classList.remove('hidden');
+                durationGroup.classList.add('hidden');
+            } else {
+                endDateGroup.classList.add('hidden');
+                durationGroup.classList.remove('hidden');
+            }
+        }
+
+        // Add event listeners for duration type radio buttons
+        endDateOptionRadios.forEach(radio => {
+            radio.addEventListener('change', updateDurationFields);
+        });
+
+        // Initial call to set correct field visibility on load
+        updateDurationFields();
+
+        // Function to format date to "Month Day, Year"
+        function formatDate(dateString) {
+            const options = { year: 'numeric', month: 'long', day: 'numeric' };
+            return new Date(dateString).toLocaleDateString('en-US', options);
+        }
+
+        // Function to generate the letter content
+        function generateLetter() {
+            const candidateInitials = candidateInitialsInput.value.toUpperCase();
+            const sequentialNumber = String(parseInt(sequentialNumberInput.value)).padStart(3, '0'); // Ensure 3 digits
+            const internFullName = internFullNameInput.value;
+            const internAddress = internAddressInput.value;
+            const internEmail = internEmailInput.value;
+            const internPhone = internPhoneInput.value;
+            const internFirstName = internFirstNameInput.value;
+            const startDate = formatDate(startDateInput.value);
+            const workingHours = workingHoursInput.value;
+            const supervisor = supervisorInput.value;
+            const stipendAmount = parseInt(stipendAmountInput.value);
+            const acceptanceDate = formatDate(acceptanceDateInput.value);
+            const senderName = senderNameInput.value;
+            const senderTitle = senderTitleInput.value;
+
+            // Determine end date or duration text
+            let endDateText = '';
+            if (document.getElementById('byEndDate').checked) {
+                const endDate = formatDate(endDateInput.value);
+                endDateText = `End Date: ${endDate}`;
+            } else {
+                const durationMonths = durationMonthsInput.value;
+                endDateText = `For a period of ${durationMonths} months from the start date`;
+            }
+
+            // Determine stipend text
+            let stipendParagraph = '';
+            if (stipendAmount > 0) {
+                stipendParagraph = `You will be provided with a monthly stipend of INR ${stipendAmount} for the duration of your internship. Please note that this stipend is inclusive of all allowances and is subject to review based on your performance and company policy.`;
+            } else {
+                stipendParagraph = `In instances where a stipend is not offered, this internship provides invaluable practical experience and a strong foundational understanding of the recruitment industry, which will significantly enhance your resume and career prospects, particularly given the remote work experience.`;
+            }
+
+            const letter = `Date: ${formatDate(new Date().toISOString().split('T')[0])}
+Ref No.: HXC/INT/2025/${candidateInitials}/${sequentialNumber}
+Name: ${internFullName}
+Address: ${internAddress}
+Email: ${internEmail}
+Phone: ${internPhone}
+
+Subject: Offer of Remote Internship at HumanXcellence Consultants
+
+Dear ${internFirstName},
+
+We are pleased to offer you a remote internship opportunity with HumanXcellence Consultants, a leading recruitment firm specializing in Pharma, IT, and ITES services across India. We believe your skills and enthusiasm will be a valuable addition to our team, and this internship will provide you with practical, hands-on exposure to the dynamic world of recruitment from the comfort of your home.
+
+Your internship will be in the role of Intern - Recruitment & Talent Acquisition.
+
+Key Details of Your Internship:
+
+Start Date: ${startDate}
+${endDateText}
+Location: Work From Home (Remote)
+Working Hours: Monday to Friday, ${workingHours} (These are general guidelines and may vary based on project requirements and mutual understanding.)
+Reporting To: ${supervisor}
+
+Scope of Work & Learning:
+During your internship, you will gain practical experience in various aspects of remote recruitment, including:
+
+* Sourcing and screening candidates using online platforms and tools.
+* Assisting with virtual interview scheduling and coordination.
+* Remote database management and record keeping.
+* Conducting market research and industry mapping in the Pharma, IT, and ITES sectors.
+* Understanding recruitment life cycles and best practices for remote talent acquisition.
+* Learning about virtual client engagement and talent management.
+
+Stipend:
+${stipendParagraph}
+
+Confidentiality & Company Policies:
+During your internship, you will have access to confidential company and client information. You are required to maintain strict confidentiality of all such information. You will also be expected to adhere to all company policies, procedures, and ethical guidelines, particularly those related to data security and remote work environments. You will need to ensure you have a reliable internet connection and a conducive workspace to perform your duties effectively.
+
+Certificate of Completion:
+Upon successful completion of your internship, and contingent on your performance and adherence to company policies, you will be provided with an Internship Completion Certificate. This certificate will acknowledge your contribution and the valuable experience gained at HumanXcellence Consultants.
+
+We are excited to have you join our team and look forward to a mutually beneficial learning experience. We believe this remote internship will provide you with a robust platform to kickstart your career in the recruitment industry, offering flexibility while building significant professional exposure.
+
+Please signify your acceptance of this internship offer by signing and returning a copy of this letter to us by ${acceptanceDate}.
+
+Should you have any questions, please do not hesitate to contact us.
+
+Welcome aboard, and we wish you a successful and rewarding internship!
+
+Sincerely,
+For HumanXcellence Consultants
+
+_________________________
+${senderName}
+${senderTitle}
+
+ACCEPTANCE OF OFFER
+I have read and understood the terms and conditions of this remote internship offer and accept the same.
+
+Intern's Signature: _________________________
+
+Date: _________________________`;
+
+            letterContentDiv.innerHTML = letter.replace(/\n/g, '<br>'); // Replace newlines with <br> for HTML display
+            letterPreviewDiv.classList.remove('hidden'); // Show the preview section
+        }
+
+        // Add event listener for the generate button
+        generateLetterBtn.addEventListener('click', generateLetter);
+
+        // Add event listener for the print button
+        printLetterBtn.addEventListener('click', () => {
+            window.print();
+        });
+
+        // Initial generation on load with default values
+        generateLetter();
+    </script>
+</body>
+</html>
