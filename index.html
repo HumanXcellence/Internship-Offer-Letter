@@ -135,6 +135,14 @@
 
         /* Print specific styles */
         @media print {
+            /* Define page margins for all pages */
+            @page {
+                margin-top: 3cm;    /* Consistent top margin for header on all pages */
+                margin-bottom: 3cm; /* Increased consistent bottom margin for footer on all pages */
+                margin-left: 1cm;   /* Consistent left margin */
+                margin-right: 1cm;  /* Consistent right margin */
+            }
+
             body {
                 background-color: #ffffff;
                 padding: 0;
@@ -176,11 +184,8 @@
                 font-size: 12pt !important; /* Adjust font size for print */
                 line-height: 1.5 !important;
                 color: #000000 !important; /* Ensure black text for printing */
-                /* Apply the desired print margins directly to the letter content */
-                padding-top: 3cm !important;    /* Adjust this value based on your letterhead's header height */
-                padding-bottom: 2cm !important; /* Adjust this value based on your letterhead's footer height */
-                padding-left: 1cm !important;   /* Standard left margin for the letter text */
-                padding-right: 1cm !important;  /* Standard right margin for the letter text */
+                /* Remove padding-top/bottom/left/right here as they are now handled by @page margins */
+                padding: 0 !important; /* Ensure no extra padding on content itself */
             }
         }
     </style>
