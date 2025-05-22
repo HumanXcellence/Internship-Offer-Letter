@@ -137,7 +137,7 @@
         @media print {
             /* Define page margins for all pages */
             @page {
-                margin-top: 4cm;    /* Consistent top margin for header on all pages (increased) */
+                margin-top: 5cm;    /* Consistent top margin for header on all pages (increased further) */
                 margin-bottom: 3cm; /* Consistent bottom margin for footer on all pages */
                 margin-left: 1cm;   /* Consistent left margin */
                 margin-right: 1cm;  /* Consistent right margin */
@@ -615,7 +615,7 @@
                     }
                 }, (error) => {
                     console.error("Error listening to offers:", error);
-                    statusMessageDiv.textContent = `Error loading offers: ${error.message}`;
+                    statusMessageDiv.textContent = `Error loading offers: ${e.message}`;
                 });
             } catch (e) {
                 console.error("Error setting up onSnapshot for offers:", e);
